@@ -85,3 +85,15 @@
 /data.tgz
 /data.tar.gz
 /data.sql
+/user/
+/user.zip
+/user.rar
+/user.tgz
+/user.tar.gz
+/user.sql
+/front/
+/front.zip
+/front.rar
+/front.tgz
+/front.tar.gz
+/front.sql
