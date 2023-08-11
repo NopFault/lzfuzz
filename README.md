@@ -15,3 +15,7 @@ Usage of lzfuzz:
 ```
 
 <img width="728" alt="image" src="https://github.com/NopFault/lzfuzz/assets/90475186/7c629efa-3bf1-4352-8f57-4023d66dc972">
+
+<img width="583" alt="image" src="https://github.com/NopFault/lzfuzz/assets/90475186/a825309d-f4b0-4a2a-98de-8cee8f5e63f3">
+
+<img width="716" alt="image" src="https://github.com/NopFault/lzfuzz/assets/90475186/d5e0c329-01b9-4f4c-b69a-05abd942324e">
