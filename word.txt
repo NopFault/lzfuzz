@@ -1,0 +1,7 @@
+/.env
+/.git/
+/.git/config
+/admin.zip
+/backup.zip
+/_backup.zip
+/posts/usefull-link-collection-pt1/
