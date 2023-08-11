@@ -60,7 +60,7 @@ func (f *Fuzzer) Fuzz() {
 
 			status, hash := f.contentsOf(strings.Replace(f.link, "[LZF]", word, -1))
 			if len(f.status) > 0 {
-				if len(strings.Split(f.status, strconv.Itoa(status))) > 2 {
+				if len(strings.Split(f.status, strconv.Itoa(status))) >= 2 {
 					fmt.Println("[ " + strconv.Itoa(status) + " ]: " + word + "\t | " + hash)
 				}
 			} else {
