@@ -4,7 +4,8 @@ Project to learn golang. Its a simple fuzzer for fuzzing websites sensitive loca
 
 
 ```
-Usage of lzfuzz:
+  -f bool
+        Follow the redirects (true | false)
   -h string
         Provide a fuzzing link: (https://www.example.com/{LZF})
   -m string
@@ -12,7 +13,7 @@ Usage of lzfuzz:
   -s string
         Set status to be shown for e.x.: 200,301... or leave empty for all
   -ua string
-        Set custom user-agent (default "Mozilla/5.0 (iPhone; CPU iPhone OS 13_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/116.0 Mobile/15E148 Safari/605.1.15")
+        Set custom user-agent (default "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36")
   -wf string
         Provide a wordlist for a fuzzer
 ```
