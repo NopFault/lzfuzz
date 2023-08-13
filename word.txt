@@ -4,6 +4,7 @@
 /.ftpaccess
 /.git/
 /.git/config
+/.htpasswd
 /config.php
 /.bzrignore
 /web.config
@@ -116,3 +117,4 @@
 /front.tgz
 /front.tar.gz
 /front.sql
+/wp-json/wp/v2/users

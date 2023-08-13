@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 type Fuzzer struct {
@@ -25,14 +26,24 @@ type Fuzzer struct {
 
 func (f *Fuzzer) contentsOf(url string) (int, string) {
 
-	req, _ := http.NewRequest(f.method, url, nil)
-
-	// to prevent EOF
-	req.Close = true
+	req, err := http.NewRequest(f.method, url, nil)
+	if err != nil {
+		panic(err)
+	}
 
 	req.Header.Set("User-Agent", f.ua)
 
-	client := &http.Client{}
+	// to prevent EOF
+	req.Close = true
+	tr := http.DefaultTransport.(*http.Transport).Clone()
+	tr.ExpectContinueTimeout = 10 * time.Second
+	tr.DisableKeepAlives = true
+	tr.IdleConnTimeout = 10 * time.Second
+
+	client := &http.Client{
+		Timeout:   10 * time.Second,
+		Transport: tr,
+	}
 
 	if f.redirects == false {
 
@@ -104,7 +115,7 @@ func main() {
 
 	flag.StringVar(&fuzzlink, "h", "", "Provide a fuzzing link: (https://www.example.com/{LZF})")
 	flag.StringVar(&wordfile, "wf", "", "Provide a wordlist for a fuzzer")
-	flag.StringVar(&useragent, "ua", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/116.0 Mobile/15E148 Safari/605.1.15", "Set custom user-agent")
+	flag.StringVar(&useragent, "ua", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36", "Set custom user-agent")
 	flag.StringVar(&status, "s", "", "Set status to be shown for e.x.: 200,301... or leave empty for all")
 	flag.StringVar(&method, "m", "GET", "You can change HTTP method ")
 	flag.BoolVar(&follow_redirects, "f", false, "Follow the redirects")
