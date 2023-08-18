@@ -70,7 +70,6 @@ func (f *Fuzzer) contentsOf(url string) (int, string) {
 	}
 
 	return resp.StatusCode, hash
-
 }
 
 func (f *Fuzzer) Fuzz() {
@@ -101,19 +100,15 @@ func (f *Fuzzer) Fuzz() {
 }
 
 func main() {
-	var fuzzlink string
-	var wordfile string
-	var useragent string
-	var status string
-	var method string
+	var fuzzlink, wordfile, useragent, status, method string
 	var follow_redirects bool
 	var wait int
 
-	flag.StringVar(&fuzzlink, "h", "", "Provide a fuzzing link: (https://www.example.com/{LZF})")
-	flag.StringVar(&wordfile, "wf", "", "Provide a wordlist for a fuzzer")
+	flag.StringVar(&fuzzlink, "h", "", "Provide a fuzzing link. (https://www.example.com/{LZF} | https://{LZF}.example.com)")
+	flag.StringVar(&wordfile, "wf", "", "Provide a wordlist for a fuzzer.")
 	flag.StringVar(&useragent, "ua", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36", "Set custom user-agent")
-	flag.StringVar(&status, "s", "", "Set status to be shown for e.x.: 200,301... or leave empty for all")
-	flag.StringVar(&method, "m", "GET", "You can change HTTP method ")
+	flag.StringVar(&status, "s", "", "Show links just witrh specified response status 200,301... or leave empty for all")
+	flag.StringVar(&method, "m", "GET", "You can change HTTP method")
 	flag.BoolVar(&follow_redirects, "f", false, "Follow the redirects")
 	flag.IntVar(&wait, "wait", 0, "Delay after each request")
 
@@ -141,5 +136,4 @@ func main() {
 		fmt.Println("Wrong parameters passed:\n ")
 		flag.PrintDefaults()
 	}
-
 }
