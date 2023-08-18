@@ -42,16 +42,13 @@ func (f *Fuzzer) contentsOf(url string) (int, string) {
 	tr.IdleConnTimeout = 10 * time.Second
 	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
-	var client *http.Client
+	var client *http.Client = &http.Client{}
+
+	client.Timeout = 10 * time.Second
+	client.Transport = tr
 	if f.redirects == false {
-		client = &http.Client{
-			CheckRedirect: func(req *http.Request, via []*http.Request) error {
-				return http.ErrUseLastResponse
-			}}
-	} else {
-		client = &http.Client{
-			Timeout:   10 * time.Second,
-			Transport: tr,
+		client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
 		}
 	}
 
