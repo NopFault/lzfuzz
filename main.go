@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"crypto/md5"
+	"crypto/tls"
 	"encoding/hex"
 	"flag"
 	"fmt"
@@ -11,7 +12,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -22,6 +22,7 @@ type Fuzzer struct {
 	status    string
 	method    string
 	redirects bool
+	wait      int
 }
 
 func (f *Fuzzer) contentsOf(url string) (int, string) {
@@ -39,18 +40,19 @@ func (f *Fuzzer) contentsOf(url string) (int, string) {
 	tr.ExpectContinueTimeout = 10 * time.Second
 	tr.DisableKeepAlives = true
 	tr.IdleConnTimeout = 10 * time.Second
+	tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 
-	client := &http.Client{
-		Timeout:   10 * time.Second,
-		Transport: tr,
-	}
-
+	var client *http.Client
 	if f.redirects == false {
-
 		client = &http.Client{
 			CheckRedirect: func(req *http.Request, via []*http.Request) error {
 				return http.ErrUseLastResponse
 			}}
+	} else {
+		client = &http.Client{
+			Timeout:   10 * time.Second,
+			Transport: tr,
+		}
 	}
 
 	resp, err := client.Do(req)
@@ -84,24 +86,20 @@ func (f *Fuzzer) Fuzz() {
 	wordScanner := bufio.NewScanner(wordlist)
 	wordScanner.Split(bufio.ScanLines)
 
-	var wg = &sync.WaitGroup{}
 	for wordScanner.Scan() {
-
-		wg.Add(1)
-
-		go func(word string) {
-			status, hash := f.contentsOf(strings.Replace(f.link, "[LZF]", word, -1))
-			if len(f.status) > 0 {
-				if len(strings.Split(f.status, strconv.Itoa(status))) >= 2 {
-					fmt.Println("[ " + strconv.Itoa(status) + " ]: " + word + "\t | " + hash)
-				}
-			} else {
+		var word string = wordScanner.Text()
+		status, hash := f.contentsOf(strings.Replace(f.link, "[LZF]", word, -1))
+		if len(f.status) > 0 {
+			if len(strings.Split(f.status, strconv.Itoa(status))) >= 2 {
 				fmt.Println("[ " + strconv.Itoa(status) + " ]: " + word + "\t | " + hash)
 			}
-			wg.Done()
-		}(wordScanner.Text())
+		} else {
+			fmt.Println("[ " + strconv.Itoa(status) + " ]: " + word + "\t | " + hash)
+		}
+		if f.wait > 0 {
+			time.Sleep(time.Duration(f.wait) * time.Second)
+		}
 	}
-	wg.Wait()
 
 }
 
@@ -112,6 +110,7 @@ func main() {
 	var status string
 	var method string
 	var follow_redirects bool
+	var wait int
 
 	flag.StringVar(&fuzzlink, "h", "", "Provide a fuzzing link: (https://www.example.com/{LZF})")
 	flag.StringVar(&wordfile, "wf", "", "Provide a wordlist for a fuzzer")
@@ -119,6 +118,7 @@ func main() {
 	flag.StringVar(&status, "s", "", "Set status to be shown for e.x.: 200,301... or leave empty for all")
 	flag.StringVar(&method, "m", "GET", "You can change HTTP method ")
 	flag.BoolVar(&follow_redirects, "f", false, "Follow the redirects")
+	flag.IntVar(&wait, "wait", 0, "Delay after each request")
 
 	flag.Parse()
 
@@ -134,6 +134,7 @@ func main() {
 			status:    status,
 			method:    method,
 			redirects: follow_redirects,
+			wait:      wait,
 		}
 
 		fuzzer.Fuzz()
